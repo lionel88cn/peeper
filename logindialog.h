@@ -17,21 +17,17 @@ class LoginDialog : public QDialog
 private:
     QLabel* labelUsername;
     QLabel* labelPassword;
-    QComboBox* comboUsername;
-    QLineEdit* editPassword;
     QDialogButtonBox* buttons;
     void setUpGUI();
 public:
+    enum LoginCode{Successful,Failed,Closed};
+    QComboBox* comboUsername;
+    QLineEdit* editPassword;
     explicit LoginDialog(QWidget *parent = 0);
+    static int getCredentials(QString& username,QString& password);
     void setUsername(QString& username);
     void setPassword(QString& password);
     void setUsernamesList(const QStringList& usernames);
-signals:
-    void acceptLogin(QString& username,QString& password,int& indexNumber);
-
-public slots:
-    void slotAcceptLogin();
-
 };
 
 #endif // LOGINDIALOG_H

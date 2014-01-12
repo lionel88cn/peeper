@@ -42,13 +42,13 @@ void LoginDialog::setUpGUI(){
     connect( buttons->button( QDialogButtonBox::Cancel ),
              SIGNAL(clicked()),
              this,
-             SLOT(close())
+             SLOT(reject())
              );
 
-    connect( buttons->button( QDialogButtonBox::Ok ),
-             SIGNAL(clicked()),
-             this,
-             SLOT(slotAcceptLogin()) );
+    connect(buttons->button(QDialogButtonBox::Ok),
+            SIGNAL(clicked()),
+            this,
+            SLOT(accept()));
 
     // place components into the dialog
     formGridLayout->addWidget( labelUsername, 0, 0 );
@@ -85,21 +85,16 @@ void LoginDialog::setPassword(QString &password){
     editPassword->setText( password );
 }
 
-void LoginDialog::slotAcceptLogin(){
-    QString username = comboUsername->currentText();
-    QString password = editPassword->text();
-    int     index    = comboUsername->currentIndex();
-
-    emit acceptLogin( username,  // current username
-                      password,  // current password
-                      index      // index in the username list
-                      );
-
-    // close this dialog
-    close();
-}
-
 
 void LoginDialog::setUsernamesList(const QStringList &usernames){
     comboUsername->addItems( usernames );
+}
+
+int LoginDialog::getCredentials(QString &username, QString &password){
+    LoginDialog* loginDialog=new LoginDialog();
+    int retCode=loginDialog->exec();
+    username=loginDialog->comboUsername->currentText();
+    password=loginDialog->editPassword->text();
+    delete loginDialog;
+    return retCode;
 }

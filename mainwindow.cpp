@@ -1,20 +1,68 @@
 #include "mainwindow.h"
+#include "findWindowList.h"
+#include "ui_mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+MainWindow::MainWindow(QWidget *parent) :
+    QMainWindow(parent)
 {
     int retCode;
-    while(1){
+    while(1)
+	{
         retCode=login();
-        if(retCode==LoginDialog::Closed||retCode==LoginDialog::Successful) break;
+        if(retCode==LoginDialog::Closed||retCode==LoginDialog::Successful)
+		{
+			break;
+		}
     }
-    if(retCode==LoginDialog::Closed) QTimer::singleShot(0, this, SLOT(close()));
+    if(retCode==LoginDialog::Closed)
+	{
+		QTimer::singleShot(0, this, SLOT(close()));
+	}
     setUpGUI();
+
+	timerId = startTimer(1000);
+}
+
+void MainWindow::setBot(Bot* b)
+{
+	msgBot=b;
 }
 
 MainWindow::~MainWindow()
 {
+	killTimer(timerId);
+}
 
+void MainWindow::timerEvent(QTimerEvent *event)
+{
+    //qDebug() << "timerEvent";
+	msgBot->receiveMsg();
+	friendTreeModel->clear();
+
+	if (mybuddylist.head!=mybuddylist.rear)
+    {
+        QStandardItem *rootNode = friendTreeModel->invisibleRootItem();
+		BuddyNode* p=mybuddylist.head;
+        while (1)
+        {
+			QStandardItem *onebuddyjiditem = new QStandardItem(QString::fromStdString(p->buddyJID));
+			rootNode->appendRow(onebuddyjiditem);
+            for (int i=0;i<p->onebuddywindowlist.win_num;i++)
+            {
+                QStandardItem *onewindowitem = new QStandardItem(QString::fromStdString(p->onebuddywindowlist.content[i]));
+				onebuddyjiditem->appendRow(onewindowitem);
+            }
+            if (!p->next)
+            {
+                break;
+            }
+            else
+            {
+                p=p->next;
+            }
+        }
+    }
+	friendTreeView->expandAll();
 }
 
 void MainWindow::setUpGUI()
@@ -35,24 +83,23 @@ void MainWindow::setUpGUI()
     QStandardItem *rootNode = friendTreeModel->invisibleRootItem();
 
     //defining a couple of items
-    QStandardItem *americaItem = new QStandardItem("America");
-    QStandardItem *mexicoItem =  new QStandardItem("Canada");
-    QStandardItem *usaItem =     new QStandardItem("USA");
-    QStandardItem *bostonItem =  new QStandardItem("Boston");
-    QStandardItem *europeItem =  new QStandardItem("Europe");
-    QStandardItem *italyItem =   new QStandardItem("Italy");
-    QStandardItem *romeItem =    new QStandardItem("Rome");
-    QStandardItem *veronaItem =  new QStandardItem("Verona");
-
-    //building up the hierarchy
-    rootNode->    appendRow(americaItem);
-    rootNode->    appendRow(europeItem);
-    americaItem-> appendRow(mexicoItem);
-    americaItem-> appendRow(usaItem);
-    usaItem->     appendRow(bostonItem);
-    europeItem->  appendRow(italyItem);
-    italyItem->   appendRow(romeItem);
-    italyItem->   appendRow(veronaItem);
+	if (mybuddylist.head!=mybuddylist.rear)
+    {
+        BuddyNode* p=mybuddylist.head;
+        while (1)
+        {
+            QStandardItem *onebuddyjiditem = new QStandardItem(QString::fromStdString(p->buddyJID));
+			rootNode->appendRow(onebuddyjiditem);
+            if (!p->next)
+            {
+                break;
+            }
+            else
+            {
+                p=p->next;
+            }
+        }
+    }
 
     //register the model
     friendTreeView->setModel(friendTreeModel);

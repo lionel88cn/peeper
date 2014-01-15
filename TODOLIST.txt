@@ -1,0 +1,10 @@
+Small TODOs
+1. Another thread to check local active windows periodically. (say every second)
+2. Mechanism to ask the server for friend list (rather than load from the local file mybuddies.logfile). Leo suggests that xmpp could have this mechanism implemented.
+
+Huge TODOs
+1. A better way to display buddy list (rather than QTreeView)
+2. Function samilar to alt-tab on mac
+3. Extract every opened tabs in web browsers 
+
+Please add to this file if you have any new ideas.

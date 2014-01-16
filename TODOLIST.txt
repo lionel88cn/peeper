@@ -1,6 +1,7 @@
 Small TODOs
 1. Another thread to check local active windows periodically. (say every second)
 2. Mechanism to ask the server for friend list (rather than load from the local file mybuddies.logfile). Leo suggests that xmpp could have this mechanism implemented.
+3. Login with real accounts (rather than username:fuck, password:fuck).
 
 Huge TODOs
 1. A better way to display buddy list (rather than QTreeView)
